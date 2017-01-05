@@ -15,6 +15,6 @@ public class Runner {
 		master.tell("The dog was the first domesticated species", ActorRef.noSender());
 		master.tell("The origin of the domestic dog is not clear.", ActorRef.noSender());
 
-
+        master.tell(new EofMessage(), ActorRef.noSender());
 	}
 }
