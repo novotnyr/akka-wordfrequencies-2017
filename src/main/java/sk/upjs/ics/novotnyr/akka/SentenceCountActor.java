@@ -9,7 +9,13 @@ import java.util.Scanner;
 public class SentenceCountActor extends UntypedActor {
     @Override
 	public void onReceive(Object message) throws Exception {
-        unhandled(message);
+        if (message instanceof String) {
+            String sentence = (String) message;
+            Map<String, Integer> frequencies = calculateFrequencies(sentence);
+            getSender().tell(frequencies, getSelf());
+        } else {
+            unhandled(message);
+        }
 	}
 
     public Map<String, Integer> calculateFrequencies(String sentence) {
