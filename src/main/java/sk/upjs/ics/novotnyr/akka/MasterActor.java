@@ -13,24 +13,36 @@ import java.util.Map;
 public class MasterActor extends UntypedActor {
     private LoggingAdapter logger = Logging.getLogger(getContext().system(), this);
 
-	private ActorRef sentenceCounter = getContext()
-			                            .actorOf(Props.create(SentenceCountActor.class)
-                                                      .withRouter(new RoundRobinPool(3)));
+    private ActorRef sentenceCounter = getContext()
+            .actorOf(Props.create(SentenceCountActor.class)
+                    .withRouter(new RoundRobinPool(3)));
 
     private Map<String, Integer> allFrequencies = new HashMap<>();
 
+    private int remainingSentences;
+
+    public MasterActor(int remainingSentences) {
+        this.remainingSentences = remainingSentences;
+    }
+
     @Override
-	public void onReceive(Object message) throws Exception {
-	    if (message instanceof String) {
-	        sentenceCounter.tell(message, getSelf());
+    public void onReceive(Object message) throws Exception {
+        if (message instanceof String) {
+            sentenceCounter.tell(message, getSelf());
         } else if (message instanceof Map) {
             @SuppressWarnings("unchecked")
-	        Map<String, Integer> frequencies = (Map<String, Integer>) message;
-
+            Map<String, Integer> frequencies = (Map<String, Integer>) message;
             allFrequencies = MapUtils.aggregate(frequencies, allFrequencies);
+
+            remainingSentences--;
+
+            if(remainingSentences == 0) {
+                logger.info(this.allFrequencies.toString());
+                getContext().system().terminate();
+            }
         } else {
-	        unhandled(message);
+            unhandled(message);
         }
-	}
+    }
 
 }
