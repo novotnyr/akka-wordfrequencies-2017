@@ -8,19 +8,19 @@ import java.util.Scanner;
 
 public class SentenceCountActor extends UntypedActor {
     @Override
-	public void onReceive(Object message) throws Exception {
+    public void onReceive(Object message) throws Exception {
         unhandled(message);
-	}
+    }
 
     public Map<String, Integer> calculateFrequencies(String sentence) {
         Map<String, Integer> freqs = new HashMap<String, Integer>();
 
         Scanner scanner = new Scanner(sentence);
-        while(scanner.hasNext()) {
+        while (scanner.hasNext()) {
             String word = scanner.next();
 
             int frequency = 1;
-            if(freqs.containsKey(word)) {
+            if (freqs.containsKey(word)) {
                 frequency += freqs.get(word);
             }
             freqs.put(word, frequency);
