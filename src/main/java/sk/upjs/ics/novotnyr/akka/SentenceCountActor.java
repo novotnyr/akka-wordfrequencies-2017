@@ -1,15 +1,25 @@
 package sk.upjs.ics.novotnyr.akka;
 
 import akka.actor.UntypedActor;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
 public class SentenceCountActor extends UntypedActor {
+    private LoggingAdapter logger = Logging.getLogger(getContext().system(), this);
+
     @Override
 	public void onReceive(Object message) throws Exception {
-        unhandled(message);
+        if (message instanceof String) {
+            String sentence = (String) message;
+            Map<String, Integer> frequencies = calculateFrequencies(sentence);
+            getSender().tell(frequencies, getSelf());
+        } else {
+            unhandled(message);
+        }
 	}
 
     public Map<String, Integer> calculateFrequencies(String sentence) {
